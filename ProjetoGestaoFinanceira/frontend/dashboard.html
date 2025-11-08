@@ -1,1 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Financeiro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2 id="saldo-total">Saldo Total: R$ 0,00</h2>
 
+        <hr>
+
+        <h3>Registrar Lançamento</h3>
+        <form id="form-lancamento">
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" required>
+            
+            <label for="valor">Valor (R$):</label>
+            <input type="number" id="valor" step="0.01" required>
+            
+            <label for="tipo">Tipo:</label>
+            <select id="tipo">
+                <option value="Receita">Receita</option>
+                <option value="Despesa">Despesa</option>
+            </select>
+            
+            <label for="categoria">Categoria:</label>
+            <select id="categoria">
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Salário">Salário</option>
+                <option value="Outros">Outros</option>
+            </select>
+            
+            <button type="submit">Adicionar</button>
+        </form>
+
+        <hr>
+
+        <h3>Gastos por Categoria</h3>
+        <div style="width: 80%; margin: auto;">
+            <canvas id="grafico-gastos"></canvas>
+        </div>
+
+        <h3>Últimos Lançamentos</h3>
+        <ul id="lista-lancamentos">
+            </ul>
+    </div>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
