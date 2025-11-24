@@ -2,78 +2,55 @@ using Microsoft.AspNetCore.Mvc;
 using ProjetoGestao.Api.Data;
 using ProjetoGestao.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using ProjetoGestao.Api.Data;
-using ProjetoGestao.Api.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace ProjetoGestao.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LancamentosController : ControllerBase
+    public class UsuariosController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public LancamentosController(AppDbContext context)
+        public UsuariosController(AppDbContext context)
         {
             _context = context;
         }
 
-        // --- 2. MÉTODO DE CRIAÇÃO ---
-        // POST: api/lancamentos (Registra uma nova receita ou despesa)
+        // POST: api/usuarios
+        // Este método vai "fazer login" ou "cadastrar"
         [HttpPost]
-        public async Task<IActionResult> CriarLancamento([FromBody] Lancamento novoLancamento)
+        public async Task<IActionResult> LoginOuCadastrarUsuario([FromBody] Usuario dadosUsuario)
         {
-            // Validações básicas
-            if (novoLancamento == null || novoLancamento.Valor <= 0 || string.IsNullOrWhiteSpace(novoLancamento.Descricao))
+            // Validação básica
+            if (dadosUsuario == null || string.IsNullOrWhiteSpace(dadosUsuario.Email))
             {
-                return BadRequest("Dados do lançamento inválidos.");
+                return BadRequest("Email é obrigatório.");
             }
 
-            // Verifica se o usuário do lançamento existe
-            var usuario = await _context.Usuarios.FindAsync(novoLancamento.UsuarioId);
-            if (usuario == null)
+            // 1. Tenta encontrar o usuário pelo email (ignorando maiúsculas/minúsculas)
+            var usuarioExistente = await _context.Usuarios
+                                        .FirstOrDefaultAsync(u => u.Email.ToLower() == dadosUsuario.Email.ToLower());
+
+            // 2. SE O USUÁRIO EXISTE (LOGIN): Retorna o usuário encontrado
+            if (usuarioExistente != null)
             {
-                return BadRequest("Usuário (UsuarioId) não encontrado.");
+                // O frontend vai receber o ID existente e carregar os dados corretos
+                return Ok(usuarioExistente);
             }
 
-            try
+            // 3. SE O USUÁRIO NÃO EXISTE (CADASTRO):
+            // Valida se o nome foi enviado, já que é um novo cadastro
+            if (string.IsNullOrWhiteSpace(dadosUsuario.Nome))
             {
-                _context.Lancamentos.Add(novoLancamento);
-                await _context.SaveChangesAsync();
-                
-                // Retorna o objeto criado, que será usado para atualizar a tela
-                return Ok(novoLancamento);
+                return BadRequest("Nome é obrigatório para novos cadastros.");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno: {ex.Message}");
-            }
-        }
+            
+            // Salva o novo usuário no banco
+            _context.Usuarios.Add(dadosUsuario);
+            await _context.SaveChangesAsync();
 
-        // --- 3. MÉTODO DE BUSCA ---
-        // GET: api/lancamentos/por-usuario/{usuarioId}
-        [HttpGet("por-usuario/{usuarioId}")]
-        public async Task<IActionResult> GetLancamentosPorUsuario(int usuarioId)
-        {
-            // Verifica se o usuário existe
-            var usuario = await _context.Usuarios.FindAsync(usuarioId);
-            if (usuario == null)
-            {
-                return NotFound("Usuário não encontrado.");
-            }
-
-            // Busca todos os lançamentos daquele usuário no banco
-            var lancamentos = await _context.Lancamentos
-                                        .Where(l => l.UsuarioId == usuarioId)
-                                        .OrderBy(l => l.Data) // Ordena por data
-                                        .ToListAsync(); // Converte em uma lista
-
-            // Retorna a lista.
-            // Se não houver lançamentos, ele retornará '[]' (um array JSON vazio),
-            // o que é VÁLIDO e não quebrará o 'response.json()'.
-            return Ok(lancamentos);
+            // Retorna o usuário que acabou de ser criado (com o novo ID)
+            return Ok(dadosUsuario);
         }
     }
 }
