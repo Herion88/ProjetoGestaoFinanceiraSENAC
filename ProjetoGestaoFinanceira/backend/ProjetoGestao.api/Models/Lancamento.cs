@@ -1,4 +1,4 @@
-namespace backend.Models
+namespace ProjetoGestao.Api.Models
 {
     public class Lancamento
     {
@@ -21,6 +21,6 @@ namespace backend.Models
 
         // Chave estrangeira ligando o lançamento ao usuário dono dele
         public int UsuarioId { get; set; }
-        public Usuario Usuario { get; set; }
+        public Usuario? Usuario { get; set; }
     }
 }
