@@ -1,0 +1,14 @@
+# ---- ARQUIVO: /.gitignore ----
+
+# Banco de dados SQLite
+*.db
+*.db-journal
+
+# Pastas de build e binários do .NET
+**/bin/
+**/obj/
+
+# Arquivos de usuário do Visual Studio
+*.vs/
+*.user
+*.suo
