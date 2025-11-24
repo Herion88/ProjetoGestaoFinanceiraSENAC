@@ -1,4 +1,6 @@
-namespace backend.Models
+using System.Collections.Generic;
+
+namespace ProjetoGestao.Api.Models
 {
     public class Usuario
     {
@@ -11,6 +13,6 @@ namespace backend.Models
         public string Email { get; set; }
 
         // Relação: um usuário pode ter vários lançamentos financeiros
-        public List<Lancamento> Lancamentos { get; set; }
+        public ICollection<Lancamento> Lancamentos { get; set; } = new List<Lancamento>();
     }
 }
