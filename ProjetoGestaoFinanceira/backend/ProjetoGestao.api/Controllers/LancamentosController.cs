@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjetoGestao.Api.Data;
 using ProjetoGestao.Api.Models;
-using using Microsoft.AspNetCore.Mvc;
-using ProjetoGestao.Api.Data;
-using ProjetoGestao.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProjetoGestao.Api.Controllers
